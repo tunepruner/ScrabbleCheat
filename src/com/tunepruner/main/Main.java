@@ -1,5 +1,7 @@
 package com.tunepruner.main;
 
+import com.sun.org.apache.xpath.internal.objects.XString;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Main {
+    public static final int REQUESTED_LENGTH = 7;
     private static List<String> listOfWords = new ArrayList<>();
     private Map<Character, Integer> letterPointage = new HashMap<>();
 
@@ -34,9 +38,16 @@ public class Main {
          * even taking into account the jackpot indexes entered by user.
          * */
 
-//        ArrayList<String> finalList = testForLength(lookForRepeatCharacters(evaluateRegex(regex)), 7);
-
+        ArrayList<String> finalList = new ArrayList<>();
+        listOfWords
+                .stream()
+                .filter(Main::evaluateRegex)
+                .filter(Main::lookForRepeatCharacters)
+                .filter(string -> testForLength(string, REQUESTED_LENGTH))
+                .forEach(finalList::add);
+        System.out.println(finalList);
     }
+
 
     private static void importWholeDictionary(List<String> listToAddDictionaryTo) throws IOException {
         File file = new File("EnglishWords.txt");
@@ -67,7 +78,6 @@ public class Main {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(regex);
         return matcher.find();
-
     }
 
     private static boolean lookForRepeatCharacters(String string) {
@@ -86,21 +96,11 @@ public class Main {
             }
         }
         return noRepetitions;
-
     }
 
-    private static ArrayList<String> testForLength(List<String> listPassedIn, int requestedLength) {
-        ArrayList<String> listToReturn = new ArrayList<String>();
-        listPassedIn.stream().filter(string -> {
-            return string.length() <= requestedLength;
-        }).forEach(listToReturn::add);
-
-        System.out.printf("%s are within the acceptable length.\n", listToReturn.size());
-        System.out.println("Here they are: ");
-        System.out.println(listToReturn);
-        return listToReturn;
+    private static boolean testForLength(String string, int requestedLength) {
+        return string.length() <= requestedLength;
     }
 
-    private static ArrayList<String>
 }
 
