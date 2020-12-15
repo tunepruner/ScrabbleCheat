@@ -1,8 +1,9 @@
 package com.tunepruner.main;
 
-import com.sun.org.apache.xpath.internal.objects.XString;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,19 +11,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Main {
     public static final int REQUESTED_LENGTH = 7;
-    private static final String regex = "(?=.*g)(?=.*b)(?=.*h)(?=.*p)";/*(?=.*r)(?=.*d)(?=.*o)*/
+    private static final String useAsManyOfTheseAsPoss = "gophrbi";
+    private static final String useOnlyOneOfThese = "dents";
+    private static String negationRegex = "";
+    private static String inclusionRegex = "(?=.*g)(?=.*b)(?=.*h)(?=.*p)";/*(?=.*r)(?=.*d)(?=.*o)*/
     private static final List<String> listOfWords = new ArrayList<>();
     private Map<Character, Integer> letterPointage = new HashMap<>();
 
 
     public static void main(String[] args) throws IOException {
         importWholeDictionary(listOfWords);
-
-//        String lettersOnBoard = ""
 
         /*
          * User enters preferred connecting letter,
@@ -42,10 +43,10 @@ public class Main {
 
         List<String> finalList = listOfWords
                 .stream()
-                .filter(string -> evaluateRegex(regex, string))
-                .filter(Main::lookForRepeatCharacters)
-                .filter(string -> testForLength(string, REQUESTED_LENGTH))
-//                .forEach(finalList::add);
+                .filter(string -> matchesRegex(useAsManyOfTheseAsPoss, string))
+                .filter(Main::hasNoRepetitions)
+                .filter(string -> isNotTooLong(REQUESTED_LENGTH, string))
+                .filter(string -> hasOnlyOneOfTheseLetters(useOnlyOneOfThese, string))
                 .collect(Collectors.toList());
         System.out.println(finalList);
     }
@@ -76,14 +77,14 @@ public class Main {
         System.out.printf("There are %d words total in this dictionary.\n", listToAddDictionaryTo.size());
     }
 
-    private static boolean evaluateRegex(String regex, String stringToEvaluate) {
+    private static boolean matchesRegex(String regex, String stringToEvaluate) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(stringToEvaluate);
         return matcher.find();
     }
 
-    private static boolean lookForRepeatCharacters(String string) {
-        char[] charArray = string.toCharArray();
+    private static boolean hasNoRepetitions(String stringToEvaluate) {
+        char[] charArray = stringToEvaluate.toCharArray();
         boolean noRepetitions = true;
         for ( char value : charArray ) {
             int repetitions = 0;
@@ -100,9 +101,18 @@ public class Main {
         return noRepetitions;
     }
 
-    private static boolean testForLength(String string, int requestedLength) {
-        return string.length() == requestedLength;
+    private static boolean isNotTooLong(int requestedLength, String stringToEvaluate) {
+        return stringToEvaluate.length() <= requestedLength;
     }
 
+    private static boolean hasOnlyOneOfTheseLetters(String useOnlyOneOfThese, String stringToEvaluate) {
+        boolean hasOnlyOne = true;
+        for ( int i = 0; i < useOnlyOneOfThese.length(); i++ ) {
+            String charToUse = ((Character)useOnlyOneOfThese.charAt(i)).toString();
+            boolean contains = stringToEvaluate.contains(charToUse);
+            if (contains) hasOnlyOne = hasNoRepetitions(stringToEvaluate);
+        }
+        return hasOnlyOne;
+    }
 }
 
