@@ -16,7 +16,6 @@ public class Main {
     private static List<String> listOfWords = new ArrayList<>();
     private Map<Character, Integer> letterPointage = new HashMap<>();
 
-
     public static void main(String[] args) throws IOException {
         importWholeDictionary(listOfWords);
         String regex = "(?=.*g)(?=.*b)(?=.*h)(?=.*p)(?=.*r)(?=.*d)(?=.*o)";/**/
@@ -41,11 +40,11 @@ public class Main {
         ArrayList<String> finalList = new ArrayList<>();
         listOfWords
                 .stream()
-                .filter(Main::evaluateRegex)
+                .filter(string -> evaluateRegex(regex, string))
                 .filter(Main::lookForRepeatCharacters)
                 .filter(string -> testForLength(string, REQUESTED_LENGTH))
                 .forEach(finalList::add);
-        System.out.println(finalList);
+        System.out.println(finalList.size());
     }
 
 
@@ -72,9 +71,10 @@ public class Main {
         bufReader.close();
 
         System.out.printf("There are %d words total in this dictionary.\n", listToAddDictionaryTo.size());
+        System.out.println("numberOfWordsThatPassRegex = " + numberOfWordsThatPassRegex);
     }
 
-    private static boolean evaluateRegex(String regex) {
+    private static boolean evaluateRegex(String regex, String stringToEvaluate) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(regex);
         return matcher.find();
