@@ -70,30 +70,23 @@ public class Main {
 
     }
 
-    private static ArrayList<String> lookForRepeatCharacters(ArrayList<String> listPassedIn) {
-        ArrayList<String> listToReturn = new ArrayList<>();
-        listPassedIn
-                .stream()
-                .filter(string -> {
-                    char[] charArray = string.toCharArray();
-                    boolean noRepetitions = true;
-                    for ( char value : charArray ) {
-                        int repetitions = 0;
-                        char compareFrom = Character.toUpperCase(value);
-                        for ( char c : charArray ) {
-                            char compareWith = Character.toUpperCase(c);
-                            if (compareFrom == compareWith) repetitions++;
-                            if (repetitions > 1) {
-                                noRepetitions = false;
-                                break;
-                            }
-                        }
-                    }
-                    return noRepetitions;
-                })
-                .forEach(listToReturn::add);
-        System.out.printf("%s have no repeated characters.\n", listToReturn.size());
-        return listToReturn;
+    private static boolean lookForRepeatCharacters(String string) {
+        char[] charArray = string.toCharArray();
+        boolean noRepetitions = true;
+        for ( char value : charArray ) {
+            int repetitions = 0;
+            char compareFrom = Character.toUpperCase(value);
+            for ( char c : charArray ) {
+                char compareWith = Character.toUpperCase(c);
+                if (compareFrom == compareWith) repetitions++;
+                if (repetitions > 1) {
+                    noRepetitions = false;
+                    break;
+                }
+            }
+        }
+        return noRepetitions;
+
     }
 
     private static ArrayList<String> testForLength(List<String> listPassedIn, int requestedLength) {
