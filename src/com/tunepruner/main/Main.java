@@ -9,16 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
     public static final int REQUESTED_LENGTH = 7;
-    private static List<String> listOfWords = new ArrayList<>();
+    private static final String regex = "(?=.*g)(?=.*b)(?=.*h)(?=.*p)";/*(?=.*r)(?=.*d)(?=.*o)*/
+    private static final List<String> listOfWords = new ArrayList<>();
     private Map<Character, Integer> letterPointage = new HashMap<>();
+
 
     public static void main(String[] args) throws IOException {
         importWholeDictionary(listOfWords);
-        String regex = "(?=.*g)(?=.*b)(?=.*h)(?=.*p)(?=.*r)(?=.*d)(?=.*o)";/**/
+
 //        String lettersOnBoard = ""
 
         /*
@@ -37,14 +40,14 @@ public class Main {
          * even taking into account the jackpot indexes entered by user.
          * */
 
-        ArrayList<String> finalList = new ArrayList<>();
-        listOfWords
+        List<String> finalList = listOfWords
                 .stream()
                 .filter(string -> evaluateRegex(regex, string))
                 .filter(Main::lookForRepeatCharacters)
                 .filter(string -> testForLength(string, REQUESTED_LENGTH))
-                .forEach(finalList::add);
-        System.out.println(finalList.size());
+//                .forEach(finalList::add);
+                .collect(Collectors.toList());
+        System.out.println(finalList);
     }
 
 
@@ -71,12 +74,11 @@ public class Main {
         bufReader.close();
 
         System.out.printf("There are %d words total in this dictionary.\n", listToAddDictionaryTo.size());
-        System.out.println("numberOfWordsThatPassRegex = " + numberOfWordsThatPassRegex);
     }
 
     private static boolean evaluateRegex(String regex, String stringToEvaluate) {
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(regex);
+        Matcher matcher = pattern.matcher(stringToEvaluate);
         return matcher.find();
     }
 
@@ -99,7 +101,7 @@ public class Main {
     }
 
     private static boolean testForLength(String string, int requestedLength) {
-        return string.length() <= requestedLength;
+        return string.length() == requestedLength;
     }
 
 }
