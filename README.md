@@ -1,5 +1,5 @@
 # ScrabbleCheat
-<i>This README was updated as of shaw 9a378828.</i>
+<i>This README was updated as of shaw 844e67b6072d91e828a870d5029cfd2250b3b964.</i>
 
 The goal of the project is to create 
 an algorithm to solve scrabble plays. 
