@@ -1,5 +1,9 @@
 package com.tunepruner.main;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,9 +19,17 @@ import java.util.stream.Collectors;
 public class Main {
     public static final int REQUESTED_LENGTH = 7;
     private static final String onlyFromThisSet = "gophrbi";/*(?=.*g)(?=.*h)(?=.*p)(?=.*r)(?=.*o)(?=.*b)(?=.*i)*/
-    public static String getOnlyFromThisSet() { return onlyFromThisSet; }
+
+    public static String getOnlyFromThisSet() {
+        return onlyFromThisSet;
+    }
+
     private static final String useExactlyOneOfThese = "dents";
-    public static String getUseExactlyOneOfThese() { return useExactlyOneOfThese; }
+
+    public static String getUseExactlyOneOfThese() {
+        return useExactlyOneOfThese;
+    }
+
     private static final List<String> listOfWords = new ArrayList<>();
     private Map<Character, Integer> letterPointage = new HashMap<>();
 
@@ -44,10 +56,10 @@ public class Main {
         List<String> finalList = listOfWords
                 .stream()
                 .map(String::toLowerCase)
-                .filter(Main::hasNoRepeatedCharacters)
-                .filter(string -> prohibitAllOtherChars(onlyFromThisSet, string))
+                .filter(string -> doesntExceedNumberOfEachCharacter(onlyFromThisSet, string))
+//                .filter(string -> prohibitAllOtherChars(onlyFromThisSet, string))
                 .filter(string -> usesExactlyOneOfThese(useExactlyOneOfThese, string))
-                .filter(string -> isNotTooLong(6, string))
+//                .filter(string -> isNotTooLong(6, string))
                 .collect(Collectors.toList());
         System.out.println(finalList);
         System.out.println(finalList.size());
@@ -79,22 +91,59 @@ public class Main {
         System.out.printf("There are %d words total in this dictionary.\n", listToAddDictionaryTo.size());
     }
 
-    public static boolean hasNoRepeatedCharacters(String stringToEvaluate) {
+    /*TODO this method needs to be changed to "doesntExceedNumberOfEachCharacter",
+     *  and then rewritten.*/
+
+    public static boolean doesntExceedNumberOfEachCharacter(String onlyFromThisString, String stringToEvaluate) {
+        boolean doesntExceedNumber = true;
+        Map<Character, Integer> onlyFromThisHashMap = new HashMap();
+        Map<Character, Integer> mapToEvaluate = new HashMap();
         char[] charArray = stringToEvaluate.toCharArray();
-        boolean noRepetitions = true;
-        for ( char value : charArray ) {
-            int repetitions = 0;
-            char compareFrom = Character.toUpperCase(value);
-            for ( char c : charArray ) {
-                char compareWith = Character.toUpperCase(c);
-                if (compareFrom == compareWith) repetitions++;
-                if (repetitions > 1) {
-                    noRepetitions = false;
-                    break;
-                }
+
+        //Moves from strings to maps to allow counting of each character's repetition
+        for ( int i = 0; i < onlyFromThisString.length(); i++ ) {
+            char compareFrom = onlyFromThisString.charAt(i);
+            if (onlyFromThisHashMap.containsKey(compareFrom))
+                onlyFromThisHashMap.replace(compareFrom, onlyFromThisHashMap.get(compareFrom) + 1);
+            else {
+                onlyFromThisHashMap.putIfAbsent(compareFrom, 1);
             }
         }
-        return noRepetitions;
+        for ( int i = 0; i < stringToEvaluate.length(); i++ ) {
+            char compareWith = stringToEvaluate.charAt(i);
+            if (mapToEvaluate.containsKey(compareWith))
+                mapToEvaluate.replace(compareWith, mapToEvaluate.get(compareWith) + 1);
+            else {
+                mapToEvaluate.putIfAbsent(compareWith, 1);
+            }
+        }
+
+        //Main logic of method.
+//        for ( int i = 0; i < onlyFromThisHashMap.size(); i++ ) {
+//            int repetitions = 0;
+//            char compareFrom = onlyFromThisString.charAt(i);
+
+        for ( int j = 0; j < stringToEvaluate.length(); j++ ) {
+            char charToEvaluate = stringToEvaluate.charAt(j);
+            if (!onlyFromThisHashMap.containsKey(charToEvaluate)) doesntExceedNumber = false;
+            else if (mapToEvaluate.get(charToEvaluate) > onlyFromThisHashMap.get(charToEvaluate)) doesntExceedNumber = false;
+        }
+
+//
+//        boolean noRepetitions = true;
+//        for ( char value : charArray ) {
+//            int repetitions = 0;
+//            char compareFrom = Character.toUpperCase(value);
+//            for ( char c : charArray ) {
+//                char compareWith = Character.toUpperCase(c);
+//                if (compareFrom == compareWith) repetitions++;
+//                if (repetitions > 1) {
+//                    noRepetitions = false;
+//                    break;
+//                }
+//            }
+//        }
+        return doesntExceedNumber;
     }
 
     public static boolean isNotTooLong(int requestedLength, String stringToEvaluate) {
@@ -114,7 +163,7 @@ public class Main {
             if (hasAtLeastOne) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(useOnlyOneOfThese).append(stringToEvaluate);
-                hasOnlyOne = hasNoRepeatedCharacters(stringBuilder.toString());
+                hasOnlyOne = doesntExceedNumberOfEachCharacter(onlyFromThisSet, stringBuilder.toString());
             }
         }
         return hasOnlyOne;
@@ -134,7 +183,10 @@ public class Main {
         for ( int i = 0; i < charsToInvert.length(); i++ ) {
             char charToRemove = charsToInvert.charAt(i);
             int indexOfUnwantedChar = charsToAvoid.indexOf(charToRemove);
-            charsToAvoid.remove(indexOfUnwantedChar);
+            try {
+                charsToAvoid.remove(indexOfUnwantedChar);
+            } catch (Exception e) {
+            }
         }
         charsToAvoidString = "";
         StringBuilder stringBuilder = new StringBuilder();
@@ -150,5 +202,7 @@ public class Main {
         boolean foundMatch = matcher.find();
         return foundMatch;
     }
-}
 
+
+
+}
