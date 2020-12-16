@@ -1,4 +1,4 @@
-#ScrabbleCheat
+# ScrabbleCheat
 <i>This README was updated as of shaw 9a378828.</i>
 
 The goal of the project is to create 
