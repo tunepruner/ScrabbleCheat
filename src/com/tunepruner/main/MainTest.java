@@ -2,9 +2,6 @@ package com.tunepruner.main;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
@@ -30,41 +27,45 @@ class MainTest {
 //    }
     @Test
     void test1DoesntExceedNumberOfEachCharacter() {
-        assertTrue(Main.doesntExceedNumberOfEachCharacter("eebrhit", "her"));
+        assertTrue(Main.doesntExceedNumberOfEachCharacter("aiohek", "eebrhit", "her"));
     }
 
     @Test
     void test2DoesntExceedNumberOfEachCharacter() {
-        assertTrue(Main.doesntExceedNumberOfEachCharacter("eebrhit", "here"));
+        assertTrue(Main.doesntExceedNumberOfEachCharacter("aiohek", "eebrhit", "here"));
     }
 
     @Test
     void test3DoesntExceedNumberOfEachCharacter() {
-        assertFalse(Main.doesntExceedNumberOfEachCharacter("eebrhit", "greece"));
+        assertFalse(Main.doesntExceedNumberOfEachCharacter("aiohek", "eebrhit", "greece"));
     }
 
     @Test
     void test4DoesntExceedNumberOfEachCharacter() {
         String onlyFromThisSet = "gophrbi";
-        assertFalse(Main.doesntExceedNumberOfEachCharacter(onlyFromThisSet, "bighorns"));
+        assertFalse(Main.doesntExceedNumberOfEachCharacter("aiohek", onlyFromThisSet, "bighorns"));
     }
 
     @Test
     void test5DoesntExceedNumberOfEachCharacter() {
         String onlyFromThisSet = "gophrbi";
-        assertTrue(Main.doesntExceedNumberOfEachCharacter(onlyFromThisSet, GOPHER));
+        assertTrue(Main.doesntExceedNumberOfEachCharacter("aiohek", onlyFromThisSet, GOPHER));
     }
 
     @Test
     void test6DoesntExceedNumberOfEachCharacter() {
         String onlyFromThisSet = "gophrbi";
-        assertTrue(Main.doesntExceedNumberOfEachCharacter(onlyFromThisSet, DROP));
+        assertTrue(Main.doesntExceedNumberOfEachCharacter("aiohek", onlyFromThisSet, DROP));
     }
 
     @Test
     void test7DoesntExceedNumberOfEachCharacter() {
         String onlyFromThisSet = "gophrbi";
-        assertTrue(Main.doesntExceedNumberOfEachCharacter(onlyFromThisSet, HOPS));
+        assertTrue(Main.doesntExceedNumberOfEachCharacter("aiohek", onlyFromThisSet, HOPS));
     }
 
+    @Test
+    void test1UseExactlyOneOfThese() {
+        assertTrue(Main.usesExactlyOneOfThese("igbets", "big"));
+    }
 }

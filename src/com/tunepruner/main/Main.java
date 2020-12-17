@@ -1,30 +1,32 @@
 package com.tunepruner.main;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+import java.lang.*;
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
+    /*TODO Using pencil and paper, sketch out my strategy. TODO Then create a test plan, with all the scenarios I want to test.*/
+    /*TODO Watch AND WORK ALONG with Mosh Algorithms course, at least for the String Algorithms part. It would be very helpful to see how a pro works with this stuff, and I think this would be the most helpful course for this project in general.
+    /*TODO Finish rewatching the Streams section of Mosh's Java course. I need to understand more functions than filter, forEach, and collect to be able to say that I have a grasp of streams.
+    /*TODO Watch regex course. It would help to be able to explain why regex might NOT be the best solution for this project!*/
+    /*TODO Watch JUnit course or read some guide.*/
+    /*TODO Watch refactoring course. It will give me some help reworking control flow. I could certainly improve with that */
+
     public static final int REQUESTED_LENGTH = 7;
-    private static final String onlyFromThisSet = "gophrbi";/*(?=.*g)(?=.*h)(?=.*p)(?=.*r)(?=.*o)(?=.*b)(?=.*i)*/
+    private static final String onlyFromThisSet = "iiiiibu";/*(?=.*g)(?=.*h)(?=.*p)(?=.*r)(?=.*o)(?=.*b)(?=.*i)*/
 
     public static String getOnlyFromThisSet() {
         return onlyFromThisSet;
     }
 
-    private static final String useExactlyOneOfThese = "dents";
+    private static final String useExactlyOneOfThese = "goetsp";
 
     public static String getUseExactlyOneOfThese() {
         return useExactlyOneOfThese;
@@ -56,9 +58,9 @@ public class Main {
         List<String> finalList = listOfWords
                 .stream()
                 .map(String::toLowerCase)
-                .filter(string -> doesntExceedNumberOfEachCharacter(onlyFromThisSet, string))
-//                .filter(string -> prohibitAllOtherChars(onlyFromThisSet, string))
                 .filter(string -> usesExactlyOneOfThese(useExactlyOneOfThese, string))
+                .filter(string -> doesntExceedNumberOfEachCharacter(useExactlyOneOfThese, onlyFromThisSet, string))
+//                .filter(string -> prohibitAllOtherChars(onlyFromThisSet, string))
 //                .filter(string -> isNotTooLong(6, string))
                 .collect(Collectors.toList());
         System.out.println(finalList);
@@ -94,55 +96,23 @@ public class Main {
     /*TODO this method needs to be changed to "doesntExceedNumberOfEachCharacter",
      *  and then rewritten.*/
 
-    public static boolean doesntExceedNumberOfEachCharacter(String onlyFromThisString, String stringToEvaluate) {
+    public static boolean doesntExceedNumberOfEachCharacter(String useExactlyOneOfThese, String onlyFromThisString, String stringToEvaluate) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(useExactlyOneOfThese).append(onlyFromThisString);
+        onlyFromThisString = stringBuilder.toString();
         boolean doesntExceedNumber = true;
-        Map<Character, Integer> onlyFromThisHashMap = new HashMap();
-        Map<Character, Integer> mapToEvaluate = new HashMap();
-        char[] charArray = stringToEvaluate.toCharArray();
 
         //Moves from strings to maps to allow counting of each character's repetition
-        for ( int i = 0; i < onlyFromThisString.length(); i++ ) {
-            char compareFrom = onlyFromThisString.charAt(i);
-            if (onlyFromThisHashMap.containsKey(compareFrom))
-                onlyFromThisHashMap.replace(compareFrom, onlyFromThisHashMap.get(compareFrom) + 1);
-            else {
-                onlyFromThisHashMap.putIfAbsent(compareFrom, 1);
-            }
-        }
-        for ( int i = 0; i < stringToEvaluate.length(); i++ ) {
-            char compareWith = stringToEvaluate.charAt(i);
-            if (mapToEvaluate.containsKey(compareWith))
-                mapToEvaluate.replace(compareWith, mapToEvaluate.get(compareWith) + 1);
-            else {
-                mapToEvaluate.putIfAbsent(compareWith, 1);
-            }
-        }
+        Map<Character, Integer> onlyFromThisHashMap = convertStringToHashMap(onlyFromThisString);
+        Map<Character, Integer> mapToEvaluate = convertStringToHashMap(stringToEvaluate);;
+        char[] charArray = stringToEvaluate.toCharArray();
 
         //Main logic of method.
-//        for ( int i = 0; i < onlyFromThisHashMap.size(); i++ ) {
-//            int repetitions = 0;
-//            char compareFrom = onlyFromThisString.charAt(i);
-
         for ( int j = 0; j < stringToEvaluate.length(); j++ ) {
             char charToEvaluate = stringToEvaluate.charAt(j);
             if (!onlyFromThisHashMap.containsKey(charToEvaluate)) doesntExceedNumber = false;
             else if (mapToEvaluate.get(charToEvaluate) > onlyFromThisHashMap.get(charToEvaluate)) doesntExceedNumber = false;
         }
-
-//
-//        boolean noRepetitions = true;
-//        for ( char value : charArray ) {
-//            int repetitions = 0;
-//            char compareFrom = Character.toUpperCase(value);
-//            for ( char c : charArray ) {
-//                char compareWith = Character.toUpperCase(c);
-//                if (compareFrom == compareWith) repetitions++;
-//                if (repetitions > 1) {
-//                    noRepetitions = false;
-//                    break;
-//                }
-//            }
-//        }
         return doesntExceedNumber;
     }
 
@@ -151,19 +121,18 @@ public class Main {
     }
 
     public static boolean usesExactlyOneOfThese(String useOnlyOneOfThese, String stringToEvaluate) {
-        boolean hasAtLeastOne = false;
-        boolean hasOnlyOne = false;
+        HashMap<Character, Integer> onlyFromThisHashMap = convertStringToHashMap(useOnlyOneOfThese);
+        HashMap<Character, Integer> mapToEvaluate = convertStringToHashMap(stringToEvaluate);
+
+        int numberOfMatches = 0;
+        boolean hasOnlyOne = true;
+
         for ( int i = 0; i < useOnlyOneOfThese.length(); i++ ) {
             String charToUse = ((Character) useOnlyOneOfThese.charAt(i)).toString();
-            if (stringToEvaluate.contains(charToUse)) {
-                if (hasAtLeastOne) break;
-                else hasAtLeastOne = true;
-                useOnlyOneOfThese = useOnlyOneOfThese.replace(charToUse, "");
-            }
-            if (hasAtLeastOne) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(useOnlyOneOfThese).append(stringToEvaluate);
-                hasOnlyOne = doesntExceedNumberOfEachCharacter(onlyFromThisSet, stringBuilder.toString());
+            if (numberOfMatches > 1) {
+                hasOnlyOne = false;
+            }else if (mapToEvaluate.containsKey(charToUse)) {
+                numberOfMatches++;
             }
         }
         return hasOnlyOne;
@@ -203,6 +172,17 @@ public class Main {
         return foundMatch;
     }
 
-
-
+    private static HashMap<Character, Integer>
+    convertStringToHashMap(String stringToEvaluate) {
+        HashMap<Character, Integer> newMap = new HashMap<>();
+        for ( int i = 0; i < stringToEvaluate.length(); i++ ) {
+            char compareWith = stringToEvaluate.charAt(i);
+            if (newMap.containsKey(compareWith))
+                newMap.replace(compareWith, newMap.get(compareWith) + 1);
+            else {
+                newMap.putIfAbsent(compareWith, 1);
+            }
+        }
+        return newMap;
+    }
 }
