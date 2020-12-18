@@ -13,7 +13,7 @@ public class GenerateStringMutations {
 //            System.out.println(string);
 //        }
     }
-    public static Stream<Arguments>/*String[]*/ generateMutationsThreeCharactersLong() {
+    public static Stream<String>/*String[]*/ generateMutationsThreeCharactersLong() {
         String[] stringArray = new String[18276];
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
         int stringArrayIndex = 0;
@@ -23,19 +23,21 @@ public class GenerateStringMutations {
 
         for ( int j = 0; j < alphabet.length(); j++ ) {
             charArray[0] = alphabet.charAt(j);
-            if (charArray[2] != null) stringArray[stringArrayIndex++] = charArrayBackToString(charArray);
+            if (charArray[2] != null)
+                stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
             for ( int k = 0; k < alphabet.length(); k++ ) {
                 charArray[1] = alphabet.charAt(k);
-                if (charArray[2] != null) stringArray[stringArrayIndex++] = charArrayBackToString(charArray);
+                if (charArray[2] != null)
+                    stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
                 for ( int l = 0; l < alphabet.length(); l++ ) {
                     charArray[2] = alphabet.charAt(l);
-                    stringArray[stringArrayIndex++] = charArrayBackToString(charArray);
+                    stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
                 }
             }
         }
 
-        Stream<String> stream = Arrays.stream(stringArray);
-        return Stream.of(Arguments.of(stream));
+        List<String> list = Arrays.asList(stringArray);
+        return list.stream();
     }
 
     public static String charArrayBackToString(Character[] charArray) {

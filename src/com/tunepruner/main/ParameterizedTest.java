@@ -19,32 +19,8 @@ class ParameterizedTest1 {
     void isNotTooLongShouldWorkRegardlessOfCharTypes(String string) {
         assertTrue(Main.isNotTooLong(4, string));
     }
-
     public static Stream<String>/*String[]*/ generateMutationsThreeCharactersLong() {
-        String[] stringArray = new String[18276];
-        String alphabet = "abcdefghijklmnopqrstuvwxyz";
-        int stringArrayIndex = 0;
-
-        Character[] charArray = new Character[3];
-
-
-        for ( int j = 0; j < alphabet.length(); j++ ) {
-            charArray[0] = alphabet.charAt(j);
-            if (charArray[2] != null)
-                stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
-            for ( int k = 0; k < alphabet.length(); k++ ) {
-                charArray[1] = alphabet.charAt(k);
-                if (charArray[2] != null)
-                    stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
-                for ( int l = 0; l < alphabet.length(); l++ ) {
-                    charArray[2] = alphabet.charAt(l);
-                    stringArray[stringArrayIndex++] = GenerateStringMutations.charArrayBackToString(charArray);
-                }
-            }
-        }
-
-        List<String> list = Arrays.asList(stringArray);
-        return list.stream();
+        return GenerateStringMutations.generateMutationsThreeCharactersLong();
     }
 
     @ParameterizedTest
