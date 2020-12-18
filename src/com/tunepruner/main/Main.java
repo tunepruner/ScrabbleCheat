@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
+
     /*TODO Using pencil and paper, sketch out my strategy. TODO Then create a test plan, with all the scenarios I want to test.*/
     /*TODO Watch AND WORK ALONG with Mosh Algorithms course, at least for the String Algorithms part. It would be very helpful to see how a pro works with this stuff, and I think this would be the most helpful course for this project in general.
     /*TODO Finish rewatching the Streams section of Mosh's Java course. I need to understand more functions than filter, forEach, and collect to be able to say that I have a grasp of streams.
