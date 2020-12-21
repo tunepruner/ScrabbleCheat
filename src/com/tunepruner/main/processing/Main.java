@@ -1,4 +1,4 @@
-package com.tunepruner.main;
+package com.tunepruner.main.processing;
 
 import java.lang.*;
 import java.util.List;
@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -21,13 +23,13 @@ public class Main {
     /*TODO Watch refactoring course. It will give me some help reworking control flow. I could certainly improve with that */
 
     public static final int REQUESTED_LENGTH = 7;
-    private static final String onlyFromThisSet = "iiiiibu";/*(?=.*g)(?=.*h)(?=.*p)(?=.*r)(?=.*o)(?=.*b)(?=.*i)*/
+    private static final String onlyFromThisSet = "ruuelizo";/*(?=.*g)(?=.*h)(?=.*p)(?=.*r)(?=.*o)(?=.*b)(?=.*i)*/
 
     public static String getOnlyFromThisSet() {
         return onlyFromThisSet;
     }
 
-    private static final String useExactlyOneOfThese = "goetsp";
+    private static final String useExactlyOneOfThese = "r";
 
     public static String getUseExactlyOneOfThese() {
         return useExactlyOneOfThese;
@@ -55,19 +57,42 @@ public class Main {
          * but highest value possible, counting points of all letters used,
          * even taking into account the jackpot indexes entered by user.
          * */
-
         List<String> finalList = listOfWords
                 .stream()
                 .map(String::toLowerCase)
-                .filter(string -> usesExactlyOneOfThese(useExactlyOneOfThese, string))
-                .filter(string -> doesntExceedNumberOfEachCharacter(useExactlyOneOfThese, onlyFromThisSet, string))
 //                .filter(string -> prohibitAllOtherChars(onlyFromThisSet, string))
 //                .filter(string -> isNotTooLong(6, string))
+//                .filter(string -> usesExactlyOneOfThese(useExactlyOneOfThese, string))
+                .filter(string -> {
+                    Pattern pattern = Pattern.compile("^r.{2}o.{1,2}$");
+                    Matcher matcher = pattern.matcher(string);
+                    return matcher.find();
+                })
+                .filter(string -> doesntExceedNumberOfEachCharacter(useExactlyOneOfThese, onlyFromThisSet, string))
+                .sorted(Comparator.comparing(String::length).reversed())
                 .collect(Collectors.toList());
         System.out.println(finalList);
         System.out.println(finalList.size());
+
+
+
+        List<Integer> listOfInteger = Arrays.asList(1, 2, 3, 4);
+        listOfInteger.stream()
+                .sorted(Comparator.comparing((Integer v) -> Integer.valueOf(v)).reversed())
+                .forEach(System.out::println);
     }
 
+    static class DooHickey<T> extends ArrayList<T> implements Supplier<T>{
+        Stream<T> dooHickey(){
+            return new ArrayList<T>().stream();
+        }
+
+        @Override
+        public T get() {
+            ArrayList<T> ts = new ArrayList<>(Collections.emptyList());
+            return ts.get(0);
+        }
+    }
 
     public static void importWholeDictionary(List<String> listToAddDictionaryTo) throws IOException {
         File file = new File("EnglishWords.txt");
@@ -105,14 +130,16 @@ public class Main {
 
         //Moves from strings to maps to allow counting of each character's repetition
         Map<Character, Integer> onlyFromThisHashMap = convertStringToHashMap(onlyFromThisString);
-        Map<Character, Integer> mapToEvaluate = convertStringToHashMap(stringToEvaluate);;
+        Map<Character, Integer> mapToEvaluate = convertStringToHashMap(stringToEvaluate);
+        ;
         char[] charArray = stringToEvaluate.toCharArray();
 
         //Main logic of method.
         for ( int j = 0; j < stringToEvaluate.length(); j++ ) {
             char charToEvaluate = stringToEvaluate.charAt(j);
             if (!onlyFromThisHashMap.containsKey(charToEvaluate)) doesntExceedNumber = false;
-            else if (mapToEvaluate.get(charToEvaluate) > onlyFromThisHashMap.get(charToEvaluate)) doesntExceedNumber = false;
+            else if (mapToEvaluate.get(charToEvaluate) > onlyFromThisHashMap.get(charToEvaluate))
+                doesntExceedNumber = false;
         }
         return doesntExceedNumber;
     }
@@ -132,7 +159,7 @@ public class Main {
             String charToUse = ((Character) useOnlyOneOfThese.charAt(i)).toString();
             if (numberOfMatches > 1) {
                 hasOnlyOne = false;
-            }else if (mapToEvaluate.containsKey(charToUse)) {
+            } else if (mapToEvaluate.containsKey(charToUse)) {
                 numberOfMatches++;
             }
         }

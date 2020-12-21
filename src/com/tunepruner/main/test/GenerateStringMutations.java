@@ -1,7 +1,5 @@
-package com.tunepruner.main;
+package com.tunepruner.main.test;
 
-
-import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,7 +17,6 @@ public class GenerateStringMutations {
         int stringArrayIndex = 0;
 
         Character[] charArray = new Character[3];
-
 
         for ( int j = 0; j < alphabet.length(); j++ ) {
             charArray[0] = alphabet.charAt(j);
