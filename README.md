@@ -18,8 +18,10 @@ ways in order to help find
 the highest scoring words quickly. A few algorithms use
 regex, other are coded manually. Everything is processed
 using streams. I used JUnit to test those algorithms, 
-and used parameterized tests for the first time. And   
-
+and used parameterized tests for the first time. And 
+despite not being necessary or even useful in this case, it was 
+fun to create an algorithm to generate a huge test
+dataset and pass it into my parameterized test.
 
   
 
